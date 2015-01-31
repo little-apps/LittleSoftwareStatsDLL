@@ -1,0 +1,11 @@
+1) Download The Library
+
+The first step is to download our library from http://getlittleapps.com/little-software-stats/libraries/cppdll-latest.zip
+
+2) Include The Library
+
+Using a Windows C++ project that you created, add the "LittleSoftwareStatsDLL.dll" (located in the DLL folder) to the folder where the result of the compiled code is located.
+
+3) Integrate with your software
+
+Next, you’ll want to call the DLL from your code to use it with your Little Software Stats. The file "Example.cpp" (in the Example folder) shows basic usage of the library and you can also use it to make sure the API is recieving data properly.
