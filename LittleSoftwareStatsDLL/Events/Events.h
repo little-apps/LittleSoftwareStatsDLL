@@ -21,9 +21,12 @@
 #include "..\rapidjson\writer.h"
 #include "..\rapidjson\stringbuffer.h"
 
+#include "..\tinyxml2\tinyxml2.h"
+
 #include "EventDataValue.h"
 #include "EventData.h"
 
+//using namespace tinyxml2;
 using namespace rapidjson;
 
 extern int nApiFormat;
@@ -99,12 +102,14 @@ public:
 
 			return s.GetString();
 		} else {
-			strOutput += L"<Events>";
+			tinyxml2::XMLDocument xmlDoc;
+
+			tinyxml2::XMLElement *pRoot = xmlDoc.NewElement("Events");
 
 			for (i = 0; i != this->events_vector.size(); i++) {
 				EventData ev = this->events_vector[i];
 
-				strOutput += _T("<Event>");
+				tinyxml2::XMLElement *pEvent = xmlDoc.NewElement("Event");
 
 				j = 0;
 
@@ -112,34 +117,44 @@ public:
 					CString key = it->first;
 					EventDataValue value = it->second;
 
-					strOutput += StringFormat(_T("<%s>"), key.GetString());
+#ifdef UNICODE
+					LPCSTR szKey = ConvertUTF16ToUTF8(key);
+#else
+					LPCSTR szKey = key.GetString();
+#endif
+
+					tinyxml2::XMLElement *pEventData = xmlDoc.NewElement(szKey);
 
 					if (value.Type == EventDataValue::STRING) {
 						CString str = value;
-						strOutput += str;
+						pEventData->SetText(str);
 					}
 					else if (value.Type == EventDataValue::INT) {
 						int n = value;
-						strOutput += StringFormat(_T("%d"), n);
+						pEventData->SetText(n);
 					}
 					else if (value.Type == EventDataValue::DOUBLE) {
 						double d = value;
-						strOutput += StringFormat(_T("%d"), static_cast<int>(d));
+						pEventData->SetText(d);
 					}
 					else if (value.Type == EventDataValue::ULONG) {
 						ULONG ul = value;
-						strOutput += StringFormat(_T("%u"), ul);
+						pEventData->SetText((unsigned int)ul);
 					}
 
-					strOutput += StringFormat(_T("</%s>"), key.GetString());
+					pEvent->InsertEndChild(pEventData);
 				}
 
-				strOutput += _T("</Event>");
+				pRoot->InsertEndChild(pEvent);
 			}
 
-			strOutput += L"</Events>";
+			xmlDoc.InsertFirstChild(pRoot);
 
-			return strOutput;
+			tinyxml2::XMLPrinter printer(0, true);
+
+			xmlDoc.Print(&printer);
+
+			return printer.CStr();
 		}
 
 		

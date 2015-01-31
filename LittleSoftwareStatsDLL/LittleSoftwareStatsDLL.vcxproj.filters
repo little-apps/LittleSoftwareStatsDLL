@@ -25,6 +25,12 @@
     <Filter Include="Header Files\Events">
       <UniqueIdentifier>{f58e4c27-52da-4ff2-92f0-334b1db65ae9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\tinyxml2">
+      <UniqueIdentifier>{a825c2d6-d7c6-497b-88f7-e109536bf9fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\tinyxml2">
+      <UniqueIdentifier>{836186f0-b05c-4f53-b559-c2f6a75b9882}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -63,6 +69,9 @@
     <ClInclude Include="Events\EventDataValue.h">
       <Filter>Header Files\Events</Filter>
     </ClInclude>
+    <ClInclude Include="tinyxml2\tinyxml2.h">
+      <Filter>Header Files\tinyxml2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -70,6 +79,9 @@
     </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2\tinyxml2.cpp">
+      <Filter>Source Files\tinyxml2</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

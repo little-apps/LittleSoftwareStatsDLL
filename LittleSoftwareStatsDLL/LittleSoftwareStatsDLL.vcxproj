@@ -28,7 +28,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v120_xp</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
@@ -86,6 +86,7 @@
     <ClInclude Include="md5\md5.h" />
     <ClInclude Include="includes.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="WindowsHardware.h" />
     <ClInclude Include="WindowsOperatingSystem.h" />
@@ -99,6 +100,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
