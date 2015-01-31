@@ -79,7 +79,6 @@
   <ItemGroup>
     <ClInclude Include="Cache.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="Events.h" />
     <ClInclude Include="Events\EventData.h" />
     <ClInclude Include="Events\EventDataValue.h" />
     <ClInclude Include="Events\Events.h" />

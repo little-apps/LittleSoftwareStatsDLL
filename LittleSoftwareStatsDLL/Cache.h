@@ -146,8 +146,13 @@ public:
 		cFile.Write(strBase64Output, strBase64Output.GetLength()*2);
 
 		// Set hidden permission
+#ifdef UNICODE
 		LPCWSTR szFileName = cFile.GetFilePath();
 		::SetFileAttributesW(szFileName, FILE_ATTRIBUTE_HIDDEN);
+#else
+		LPCSTR szFileName = cFile.GetFilePath();
+		::SetFileAttributesA(szFileName, FILE_ATTRIBUTE_HIDDEN);
+#endif
 
 		return TRUE;
 	}

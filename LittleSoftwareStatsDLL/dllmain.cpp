@@ -17,7 +17,7 @@
 */
 
 #include "includes.h"
-#include "Events.h"
+#include "Events\Events.h"
 #include "globals.h"
 
 #define LICENSE_FREE _T('F')
