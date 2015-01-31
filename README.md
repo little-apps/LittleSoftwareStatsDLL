@@ -41,8 +41,9 @@ In order for the LittleSoftwareStatsDLL to properly detect operating systems, pl
 Little Apps would like to thank the following for helping with this library for Little Software Stats:
 
  - [RapidJSON by Milo Yip](https://github.com/miloyip/rapidjson)
+ - [TinyXML-2 by Lee Thomason](https://github.com/leethomason/tinyxml2/)
 
 ### To Do ###
  - Get rid of the MFC library and just use the STD library
  - Library can only be compiled with unicode support?
- - Implement XML library
+ - ~~Implement XML library~~
