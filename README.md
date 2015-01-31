@@ -36,3 +36,13 @@ In order for the LittleSoftwareStatsDLL to properly detect operating systems, pl
  - This library should not require administrator privileges in order to work properly. However, the included DLL library (available for download from [getlittleapps.com](https://getlittleapps.com/little-software-stats/libraries/)) has already been code signed just in case.
  - If you need to make changes to the interaction with the API (such as how the response is handled), then you need to modify the code for the DLL.
  - Due to the limitations of C++, you (usually) cannot use the stack trace when tracking exceptions with Little Software Stats.
+ 
+### Credits ###
+Little Apps would like to thank the following for helping with this library for Little Software Stats:
+
+ - [RapidJSON by Milo Yip](https://github.com/miloyip/rapidjson)
+
+### To Do ###
+ - Get rid of the MFC library and just use the STD library
+ - Library can only be compiled with unicode support?
+ - Implement XML library
