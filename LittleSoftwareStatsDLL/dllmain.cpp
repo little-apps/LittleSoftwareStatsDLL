@@ -81,7 +81,7 @@ extern "C" {
 		bStarted = TRUE;
 
 		/* For debugging use */
-		CString strOutput = cEvents.Serialize();
+		/*CString strOutput = cEvents.Serialize();
 
 		_tprintf(_T("Output: %s\n"), strOutput.GetString());
 
@@ -96,7 +96,7 @@ extern "C" {
 		_tprintf(_T("Service Pack: %d\n"), cWindowsOS.nServicePack);
 		_tprintf(_T("Architecture: %d-bit\n"), cWindowsOS.nArchitecture);
 		_tprintf(_T(".NET Framework: %s (SP: %d)\n"), cWindowsOS.strFrameworkVer.GetString(), cWindowsOS.nFrameworkSP);
-		_tprintf(_T("Java: %s\n"), cWindowsOS.strJavaVer.GetString());
+		_tprintf(_T("Java: %s\n"), cWindowsOS.strJavaVer.GetString());*/
 	}
 
 	__declspec(dllexport) void Stop() {
