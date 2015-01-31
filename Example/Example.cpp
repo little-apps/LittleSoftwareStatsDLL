@@ -154,12 +154,12 @@ int _tmain(int argc, _TCHAR* argv[]) {
 	}
 
 	// API info
-	const TCHAR szApiUrl[] = _T(""); // URL to API (ie: http://YOURWEBSITEHERE/api.json)
+	const TCHAR szApiUrl[] = _T("http://example.com/api.json"); // URL to API (ie: http://YOURWEBSITEHERE/api.json)
 	int nApiFormat = FORMAT_JSON; // Must correspond with extension in URL (FORMAT_XML or FORMAT_JSON)
 
 	// Application info
-	const TCHAR szAppId[] = _T(""); // Application ID (ie: 26ad4eb8f804200f1e23b27c1873d703)
-	const TCHAR szAppVer[] = _T(""); // Application version (ie: 1.0)
+	const TCHAR szAppId[] = _T("26ad4eb8f804200f1e23b27c1873d703"); // Application ID (ie: 26ad4eb8f804200f1e23b27c1873d703)
+	const TCHAR szAppVer[] = _T("1.0"); // Application version (ie: 1.0)
 
 	if (_tccmp(szApiUrl, _T("")) == 0) {
 		_tprintf(_T("API URL cannot be empty"));

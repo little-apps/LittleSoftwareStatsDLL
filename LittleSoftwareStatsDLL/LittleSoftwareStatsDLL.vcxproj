@@ -28,7 +28,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolset>v120_xp</PlatformToolset>
     <UseOfMfc>Static</UseOfMfc>
   </PropertyGroup>
@@ -80,6 +80,9 @@
     <ClInclude Include="Cache.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Events.h" />
+    <ClInclude Include="Events\EventData.h" />
+    <ClInclude Include="Events\EventDataValue.h" />
+    <ClInclude Include="Events\Events.h" />
     <ClInclude Include="globals.h" />
     <ClInclude Include="md5\md5.h" />
     <ClInclude Include="includes.h" />

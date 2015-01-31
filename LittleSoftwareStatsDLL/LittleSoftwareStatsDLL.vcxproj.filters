@@ -22,6 +22,9 @@
     <Filter Include="Header Files\md5">
       <UniqueIdentifier>{98b0c9ec-9734-4fe2-bcf8-ceec98c192e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Events">
+      <UniqueIdentifier>{f58e4c27-52da-4ff2-92f0-334b1db65ae9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -53,6 +56,15 @@
     </ClInclude>
     <ClInclude Include="md5\md5.h">
       <Filter>Header Files\md5</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\Events.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\EventData.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="Events\EventDataValue.h">
+      <Filter>Header Files\Events</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
