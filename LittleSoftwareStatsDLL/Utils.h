@@ -20,7 +20,7 @@
 
 void GetMachineHash(CString &strHashHex);
 CString StringFormat(const TCHAR *fmt, ...);
-CString Enquoute(CString s);
+CStringW Enquoute(const CStringW &s);
 CStringA GenerateId(void);
 LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16);
 CStringW base64_encode(CStringW const string_to_encode);
