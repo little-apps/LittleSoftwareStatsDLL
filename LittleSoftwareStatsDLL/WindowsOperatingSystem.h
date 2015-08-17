@@ -23,8 +23,13 @@
 class WindowsOperatingSystem {
 public:
 	WindowsOperatingSystem() {
+		m_nArchitecture = 0;
+		m_nServicePack = 0;
+		m_nFrameworkSP = 0;
+		m_nLcid = 0;
+
 		// Get LCID
-		this->nLcid = GetThreadLocale();
+		m_nLcid = GetThreadLocale();
 
 		// Get operating system info
 		GetOSInfo();
@@ -35,15 +40,17 @@ public:
 		// Get Java version
 		GetJavaVer();
 	}
-	~WindowsOperatingSystem() { }
+	
+	virtual ~WindowsOperatingSystem() { }
 
-	CString strVersion;
-	int nArchitecture;
-	int nServicePack, nFrameworkSP;
-	CString strFrameworkVer;
-	CString strJavaVer;
-	int nLcid;
-	WindowsHardware cWindowsHardware;
+	CString			m_strVersion;
+	int				m_nArchitecture;
+	int				m_nServicePack;
+	int				m_nFrameworkSP;
+	CString			m_strFrameworkVer;
+	CString			m_strJavaVer;
+	int				m_nLcid;
+	WindowsHardware m_cWindowsHardware;
 private:
 	void GetOSInfo() {
 		OSVERSIONINFOEX osvi;
@@ -56,21 +63,24 @@ private:
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
 		if (GetVersionEx((OSVERSIONINFO*)&osvi) == FALSE) {
-			this->strVersion = _T("Unknown");
-			this->nServicePack = 0;
+			m_strVersion = _T("Unknown");
+			m_nServicePack = 0;
 			return;
 		}
 
 		ZeroMemory(&si, sizeof(SYSTEM_INFO));
 		GetSystemInfo(&si);
 
-		switch (osvi.dwPlatformId) {
+		switch (osvi.dwPlatformId) 
+		{
 			case VER_PLATFORM_WIN32_WINDOWS: 
 				{
-					switch (osvi.dwMajorVersion) {
+					switch (osvi.dwMajorVersion) 
+					{
 						case 4:
 							{
-								switch (osvi.dwMinorVersion) {
+								switch (osvi.dwMinorVersion) 
+								{
 									case 0:	
 										{
 											if (_tcscmp(osvi.szCSDVersion, _T("B")) == 0 || _tcscmp(osvi.szCSDVersion, _T("C")) == 0)
@@ -101,7 +111,8 @@ private:
 				}
 				case VER_PLATFORM_WIN32_NT: 
 					{
-						switch (osvi.dwMajorVersion) {
+						switch (osvi.dwMajorVersion) 
+						{
 							case 3:
 								{
 									strOSName = _T("Windows NT 3.5.1");
@@ -114,7 +125,8 @@ private:
 								}
 							case 5:
 								{
-									switch (osvi.dwMinorVersion) {
+									switch (osvi.dwMinorVersion) 
+									{
 										case 0: 
 											{
 												strOSName = _T("Windows 2000");
@@ -144,7 +156,8 @@ private:
 								}
 							case 6:
 								{
-									switch (osvi.dwMinorVersion) {
+									switch (osvi.dwMinorVersion) 
+									{
 										case 0: 
 											{
 												if (osvi.wProductType == VER_NT_WORKSTATION)
@@ -178,96 +191,96 @@ private:
 					break;
 		}
 
-		this->strVersion = strOSName;
-		this->nServicePack = osvi.wServicePackMajor;
+		m_strVersion = strOSName;
+		m_nServicePack = osvi.wServicePackMajor;
 
 		// Get OS Architecture
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-			LPTSTR szArch = (LPTSTR)malloc(sizeof(TCHAR)*100);
+			LPTSTR szArch = new TCHAR[100];
 
 			ZeroMemory(szArch, 100);
 
 			if (RegQueryValueEx(hKey, _T("PROCESSOR_ARCHITECTURE"), NULL, NULL, (LPBYTE)szArch, &dwSize) == ERROR_SUCCESS) {
 				if (_tcscmp(szArch, _T("AMD64")) == 0)
-					this->nArchitecture = 64;
+					m_nArchitecture = 64;
 				else
-					this-> nArchitecture = 32;
+					m_nArchitecture = 32;
 			} else {
-				this->nArchitecture = (sizeof(PVOID) == 4 ? 32 : 64);
+				m_nArchitecture = (sizeof(PVOID) == 4 ? 32 : 64);
 			}
 
-			free(szArch);
+			delete[] szArch;
 
 			RegCloseKey(hKey);
 		}
 	}
 
 	void GetJavaVer() {
-		HKEY hKey;
-		DWORD dwSize;
-		LPTSTR szJavaVer = (LPTSTR)malloc(sizeof(TCHAR)*100);
+		HKEY hKey = NULL;
+		DWORD dwSize = 0;
+		LPTSTR szJavaVer = new TCHAR[100];
 
 		ZeroMemory(szJavaVer, 100);
 
-		if (cWindowsHardware.nCPUArch == 64) {
+		if (m_cWindowsHardware.m_nCPUArch == 64) {
 			if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\JavaSoft\\Java Runtime Environment"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 				if (RegQueryValueEx(hKey, _T("CurrentVersion"), NULL, NULL, (LPBYTE)szJavaVer, &dwSize) == ERROR_SUCCESS)
-					this->strJavaVer = szJavaVer;
+					m_strJavaVer = szJavaVer;
 
 				RegCloseKey(hKey);
 			}
 		}
 
-		if (this->strJavaVer.IsEmpty()) {
+		if (m_strJavaVer.IsEmpty()) {
 			if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\JavaSoft\\Java Runtime Environment"), 0, KEY_READ|KEY_WOW64_32KEY, &hKey) == ERROR_SUCCESS) {
 				ZeroMemory(szJavaVer, 100);
 
 				if (RegQueryValueEx(hKey, _T("CurrentVersion"), NULL, NULL, (LPBYTE)szJavaVer, &dwSize) == ERROR_SUCCESS)
-					this->strJavaVer = szJavaVer;
+					m_strJavaVer = szJavaVer;
 
 				RegCloseKey(hKey);
 			} else {
-				this->strJavaVer = _T("0.0");
+				m_strJavaVer = _T("0.0");
 			}
 		}
 
-		free(szJavaVer);
+		delete[] szJavaVer;
 	}
 
 	void GetFrameworkVer() {
 		HKEY hKey, hSubKey;
 		DWORD dwSize;
 
-		this->nFrameworkSP = 0;
+		m_nFrameworkSP = 0;
 
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\NET Framework Setup\\NDP"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 			DWORD dwServicePack = 0;
 
 			if (RegOpenKeyEx(hKey, _T("v4"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
-				this->strFrameworkVer = _T("4.0");
+				m_strFrameworkVer = _T("4.0");
 
 				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
-					this->nFrameworkSP = dwServicePack;
+					m_nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v3.5"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
-				this->strFrameworkVer = _T("3.5");
+				m_strFrameworkVer = _T("3.5");
 
 				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
-					this->nFrameworkSP = dwServicePack;
+					m_nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v3.0"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
-				this->strFrameworkVer = _T("3.0");
+				m_strFrameworkVer = _T("3.0");
 
 				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
-					this->nFrameworkSP = dwServicePack;
+					m_nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v2.0.50727"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
-				this->strFrameworkVer = _T("2.0.50727");
+				m_strFrameworkVer = _T("2.0.50727");
 
 				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
-					this->nFrameworkSP = dwServicePack;
+					m_nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v1.1.4322"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
-				this->strFrameworkVer = _T("1.1.4322");
+				m_strFrameworkVer = _T("1.1.4322");
 
 				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
-					this->nFrameworkSP = dwServicePack;
+					m_nFrameworkSP = dwServicePack;
 			} 
 
 			if (hSubKey)
@@ -278,12 +291,12 @@ private:
 			DWORD dwServicePack = 0;
 
 			if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
-				this->nFrameworkSP = dwServicePack;
+				m_nFrameworkSP = dwServicePack;
 
 			RegCloseKey(hKey);
 		} else {
-			this->strFrameworkVer = _T("0.0");
-			this->nFrameworkSP = 0;
+			m_strFrameworkVer = _T("0.0");
+			m_nFrameworkSP = 0;
 		}
 	}
 };

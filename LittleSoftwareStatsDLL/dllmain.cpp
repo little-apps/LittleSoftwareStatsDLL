@@ -65,16 +65,16 @@ extern "C" {
 		ev.Add(_T("osnsp"), cWindowsOS.m_nFrameworkSP);
 		ev.Add(_T("oslng"), cWindowsOS.m_nLcid);
 
-		ev.Add(_T("osscn"), cWindowsOS.cWindowsHardware.m_strScreenRes);
-		ev.Add(_T("cnm"), cWindowsOS.cWindowsHardware.m_strCPUName);
-		ev.Add(_T("car"), cWindowsOS.cWindowsHardware.m_nCPUArch);
-		ev.Add(_T("cbr"), cWindowsOS.cWindowsHardware.m_strCPUManufacturer);
-		ev.Add(_T("cfr"), cWindowsOS.cWindowsHardware.m_nCPUFreq);
-		ev.Add(_T("ccr"), cWindowsOS.cWindowsHardware.m_nCPUCores);
-		ev.Add(_T("mtt"), cWindowsOS.cWindowsHardware.m_nMemTotal);
-		ev.Add(_T("mfr"), cWindowsOS.cWindowsHardware.m_nMemFree);
-		ev.Add(_T("dtt"), cWindowsOS.cWindowsHardware.m_nDiskTotal);
-		ev.Add(_T("dfr"), cWindowsOS.cWindowsHardware.m_nDiskFree);
+		ev.Add(_T("osscn"), cWindowsOS.m_cWindowsHardware.m_strScreenRes);
+		ev.Add(_T("cnm"), cWindowsOS.m_cWindowsHardware.m_strCPUName);
+		ev.Add(_T("car"), cWindowsOS.m_cWindowsHardware.m_nCPUArch);
+		ev.Add(_T("cbr"), cWindowsOS.m_cWindowsHardware.m_strCPUManufacturer);
+		ev.Add(_T("cfr"), cWindowsOS.m_cWindowsHardware.m_nCPUFreq);
+		ev.Add(_T("ccr"), cWindowsOS.m_cWindowsHardware.m_nCPUCores);
+		ev.Add(_T("mtt"), cWindowsOS.m_cWindowsHardware.m_nMemTotal);
+		ev.Add(_T("mfr"), cWindowsOS.m_cWindowsHardware.m_nMemFree);
+		ev.Add(_T("dtt"), cWindowsOS.m_cWindowsHardware.m_nDiskTotal);
+		ev.Add(_T("dfr"), cWindowsOS.m_cWindowsHardware.m_nDiskFree);
 
 		cEvents.Add(ev);
 
@@ -244,7 +244,7 @@ extern "C" {
 		if (g_strApplicationId.IsEmpty() || g_strApplicationVer.IsEmpty())
 			return;
 
-		ev.Add(_T("ID"), strUniqueId);
+		ev.Add(_T("ID"), g_strUniqueId);
 		ev.Add(_T("aid"), g_strApplicationId);
 		ev.Add(_T("aver"), g_strApplicationVer);
 
@@ -252,7 +252,7 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void Uninstall(LPCTSTR szAppId, LPCTSTR szAppVer) {
-		EventData ev(CString(_T("ust")), g_strSessionId, ++ng_FlowNumber);
+		EventData ev(CString(_T("ust")), g_strSessionId, ++g_nFlowNumber);
 
 		if (g_strUniqueId.IsEmpty())
 			GetMachineHash(g_strUniqueId);

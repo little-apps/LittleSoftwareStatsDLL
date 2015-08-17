@@ -21,26 +21,39 @@
 class WindowsHardware {
 public:
 	WindowsHardware(void) {
+		m_nMemTotal = 0L;
+		m_nMemFree = 0L;
+		m_nDiskTotal = 0L;
+		m_nDiskFree = 0L;
+		m_nCPUCores = 0;
+		m_nCPUArch = 0;
+		m_nCPUFreq = 0;
+
 		GetScreenRes();
 		GetMemory();
 		GetDiskSpace();
 		GetCPUInfo();
 	}
 
-	~WindowsHardware(void) { }
+	virtual ~WindowsHardware(void) { }
 
-	CString strScreenRes;
-	ULONG nMemTotal, nMemFree;
-	ULONG nDiskTotal, nDiskFree;
-	CString strCPUName, strCPUManufacturer;
-	int nCPUCores, nCPUArch, nCPUFreq;
+	CString	m_strScreenRes;
+	ULONG	m_nMemTotal;
+	ULONG	m_nMemFree;
+	ULONG	m_nDiskTotal;
+	ULONG	m_nDiskFree;
+	CString m_strCPUName;
+	CString m_strCPUManufacturer;
+	int		m_nCPUCores;
+	int		m_nCPUArch;
+	int		m_nCPUFreq;
 
 private:
 	void GetScreenRes() {
 		RECT rc;
 		GetWindowRect(GetDesktopWindow(), &rc);
 
-		this->strScreenRes = StringFormat(_T("%dx%d"), rc.right, rc.bottom);
+		m_strScreenRes = StringFormat(_T("%dx%d"), rc.right, rc.bottom);
 	}
 
 	void GetMemory() {
@@ -48,8 +61,8 @@ private:
 		statex.dwLength = sizeof(statex);
 
 		if (GlobalMemoryStatusEx(&statex)) {
-			this->nMemTotal = static_cast<ULONG>(statex.ullTotalPhys / 1024 / 1024);
-			this->nMemFree = static_cast<ULONG>(statex.ullAvailPhys / 1024 / 1024);
+			m_nMemTotal = static_cast<ULONG>(statex.ullTotalPhys / 1024 / 1024);
+			m_nMemFree = static_cast<ULONG>(statex.ullAvailPhys / 1024 / 1024);
 		}
 
 		return;
@@ -58,8 +71,8 @@ private:
 	void GetDiskSpace() {
 		ULONGLONG nFreeBytes, nTotalBytes;
 
-		this->nDiskTotal = 0;
-		this->nDiskFree = 0;
+		m_nDiskTotal = 0;
+		m_nDiskFree = 0;
 
 		DWORD dwSize = GetLogicalDriveStrings(0, NULL);
 		LPTSTR pszDrives = new TCHAR[dwSize + 2];
@@ -73,16 +86,14 @@ private:
 
 				GetDiskFreeSpaceEx(pszDrv, NULL, (PULARGE_INTEGER)&nTotalBytes,(PULARGE_INTEGER)&nFreeBytes);
 
-				this->nDiskTotal += static_cast<ULONG>(nTotalBytes / 1024 / 1024);
-				this->nDiskFree += static_cast<ULONG>(nFreeBytes / 1024 / 1024);
+				m_nDiskTotal += static_cast<ULONG>(nTotalBytes / 1024 / 1024);
+				m_nDiskFree += static_cast<ULONG>(nFreeBytes / 1024 / 1024);
 			}
 
 			pszDrv += _tcslen (pszDrv) + 1;
 		}
 
 		delete[] pszDrives;
-
-		return;
 	}
 
 	void GetCPUInfo() {
@@ -92,50 +103,50 @@ private:
 
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 			// Get CPU name
-			LPTSTR szCPUName = (LPTSTR)malloc(sizeof(TCHAR)*100);
+			LPTSTR szCPUName = new TCHAR[100];
 			ZeroMemory(szCPUName, 100);
 
 			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), NULL, NULL, (LPBYTE)szCPUName, &dwSize) == ERROR_SUCCESS) {
-				this->strCPUName = szCPUName;
-				this->strCPUName.Replace(_T("(TM)"), _T(""));
-				this->strCPUName.Replace(_T("(R)"), _T(""));
-				this->strCPUName.Remove(_T(' '));
+				m_strCPUName = szCPUName;
+				m_strCPUName.Replace(_T("(TM)"), _T(""));
+				m_strCPUName.Replace(_T("(R)"), _T(""));
+				m_strCPUName.Remove(_T(' '));
 			} else {
-				this->strCPUName = _T("Unknown");
+				m_strCPUName = _T("Unknown");
 			}
 
 			// Get CPU manufacturer
-			LPTSTR szCPUManufacturer = (LPTSTR)malloc(sizeof(TCHAR)*100);
+			LPTSTR szCPUManufacturer = new TCHAR[100];
 			ZeroMemory(szCPUManufacturer, 100);
 
 			if (RegQueryValueEx(hKey, _T("VendorIdentifier"), NULL, NULL, (LPBYTE)szCPUManufacturer, &dwSize) == ERROR_SUCCESS) {
-				this->strCPUManufacturer = szCPUManufacturer;
+				m_strCPUManufacturer = szCPUManufacturer;
 			} else {
-				this->strCPUManufacturer = _T("Unknown");
+				m_strCPUManufacturer = _T("Unknown");
 			}
 
 			// Get CPU Frequency
 			DWORD dwCPUFreq = 0;
 			if (RegQueryValueEx(hKey, _T("~MHz"), NULL, NULL, (LPBYTE)&dwCPUFreq, &dwSize) == ERROR_SUCCESS)
-				this->nCPUFreq = dwCPUFreq;
+				m_nCPUFreq = dwCPUFreq;
 
 			// Free buffer
-			free(szCPUName);
-			free(szCPUManufacturer);
+			delete[] szCPUName;
+			delete[] szCPUManufacturer;
 		} else {
-			this->strCPUManufacturer = _T("Unknown");
-			this->strCPUName = _T("Unknown");
+			m_strCPUManufacturer = _T("Unknown");
+			m_strCPUName = _T("Unknown");
 		}
 
 		SYSTEM_INFO siSysInfo;
 		GetNativeSystemInfo(&siSysInfo);
 
 		if (siSysInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
-			this->nCPUArch = 64;
+			m_nCPUArch = 64;
 		else
-			this->nCPUArch = 32;
+			m_nCPUArch = 32;
 
-		this->nCPUCores = siSysInfo.dwNumberOfProcessors;
+		m_nCPUCores = siSysInfo.dwNumberOfProcessors;
 
 		RegCloseKey(hKey);
 

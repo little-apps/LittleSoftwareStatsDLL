@@ -45,7 +45,7 @@ public:
 		size_t i, j;
 		std::map<CString, EventDataValue>::iterator it;
 
-		if (nApiFormat == FORMAT_JSON) {
+		if (g_nApiFormat == FORMAT_JSON) {
 			StringBuffer s;
 			Writer<StringBuffer> writer(s);
 
