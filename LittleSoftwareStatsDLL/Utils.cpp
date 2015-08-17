@@ -18,19 +18,22 @@
 
 #include "includes.h"
 
-extern CString strApiUrl;
-extern int nApiFormat;
+extern CString g_strApiUrl;
+extern int g_nApiFormat;
 
 void GetMachineHash(CString &strHashHex) {
 	CMD5 cMD5;
-	BYTE *szHash = (BYTE*)malloc(48);
-	LPBYTE szMachineNameHash, szNetworkAddressHash, szVolumeIdHash;
+	BYTE *szHash = new BYTE[48];
+	LPBYTE szMachineNameHash = NULL;
+	LPBYTE szNetworkAddressHash = NULL;
+	LPBYTE szVolumeIdHash = NULL;
 
 	TCHAR szMachineId[100];
 	DWORD nMachineIdLen = 100;
 
 	TCHAR szNetworkAddress[13];
-	IP_ADAPTER_INFO *pAdapterInfo, *pAdapter = NULL;
+	IP_ADAPTER_INFO *pAdapterInfo = NULL;
+	IP_ADAPTER_INFO *pAdapter = NULL;
 	DWORD dwRetVal = 0;
 	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
@@ -53,15 +56,15 @@ void GetMachineHash(CString &strHashHex) {
 	cMD5.Calculate(szMachineId);
 	szMachineNameHash = cMD5.Hash();
 
-	pAdapterInfo = (IP_ADAPTER_INFO *) malloc(sizeof(IP_ADAPTER_INFO));
+	pAdapterInfo = new IP_ADAPTER_INFO;
 	if (pAdapterInfo == NULL) {
 		TRACE(_T("Error allocating memory needed to call GetAdaptersinfo()"));
 	}
 
 	// Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
 	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
-		free(pAdapterInfo);
-		pAdapterInfo = (IP_ADAPTER_INFO *)malloc(ulOutBufLen);
+		delete pAdapterInfo;
+		pAdapterInfo = (IP_ADAPTER_INFO *)new BYTE[ulOutBufLen];
 
 		if (pAdapterInfo == NULL) {
 			TRACE(_T("Error allocating memory needed to call GetAdaptersinfo()"));
@@ -119,65 +122,75 @@ void GetMachineHash(CString &strHashHex) {
 	//strHashHex.Preallocate(33);
 	cMD5.HexHash(strHashHex);
 
-	free(szHash);
-	free(pAdapterInfo);
+	delete[] szHash;
+	delete   pAdapterInfo;
+
+	delete[] szMachineNameHash;
+	delete[] szVolumeIdHash;
+	delete[] szNetworkAddressHash;
 
 	return;
 }
 
-char *GenerateId() {
-	char *szId = (char*)malloc(sizeof(char) * 33);
+CStringA GenerateId() {
+	CStringA strResult;
+	char *szId = strResult.GetBuffer(33);
+
 	static const char alphanum[] = "0123456789ABCDEF";
 
 	ZeroMemory(szId, 33);
 
-	srand(time((time_t)NULL));
+	srand((unsigned int)time((time_t)NULL));
 
     for (int i = 0; i < 32; ++i) {
 		szId[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
     }
 
-    return szId;
+	strResult.ReleaseBuffer();
+
+	return strResult;
 }
 
 CString StringFormat(const TCHAR *fmt, ...) {
-	CString result;
-    LPTSTR buffer;
-    int sz;
+	CString strResult;
+    LPTSTR szBuffer = NULL;
+    int sz = 0;
     va_list args;
 
     va_start( args, fmt );
 
     sz = _vsctprintf( fmt, args ) + 1;
 
-    buffer = result.GetBuffer( sz );
+	szBuffer = strResult.GetBuffer(sz);
 
-    sz = _vsntprintf_s( buffer, sz, _TRUNCATE, fmt, args );
+	sz = _vsntprintf_s(szBuffer, sz, _TRUNCATE, fmt, args);
 
-    result.ReleaseBuffer( sz );
+    strResult.ReleaseBuffer( sz );
 
     va_end( args );
 
-    return result;
+    return strResult;
 }
 
-CString Enquoute(CString s) {
+CStringW Enquoute(const CStringW &s) {
 	if (s.IsEmpty())
-		return CString(_T("\"\""));
+		return CStringW(_T("\"\""));
 
 	int i;
 	int nLen = s.GetLength();
-	CString str;
+	CStringW str;
 
 	str =  _T('"');
 
 	for (i = 0; i < nLen; i++) {
-		TCHAR c = s[i];
+		wchar_t c = s[i];
 
-		if ((c == '\\') || (c == '"') || (c == '>')) {
+		if ((c == '\\') || (c == '"') || (c == '>')) 
+		{
 			str += _T("\\");
 			str += c;
-		} else if (c == '\b')
+		} 
+		else if (c == '\b')
 			str += _T("\\b");
 		else if (c == '\t')
 			str += _T("\\t");
@@ -187,12 +200,12 @@ CString Enquoute(CString s) {
 			str += _T("\\f");
 		else if (c == '\r')
 			str += _T("\\r");
-		else {
-			if (c < _T(' ')) {
+		else 
+		{
+			if (c < _T(' '))
 				str += StringFormat(_T("\\u%0.4X"), c);
-			} else {
+			else
 				str += c;
-			}
 		}
 	}
 
@@ -214,9 +227,8 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 	size_t cchUTF16;
 	cchUTF16 = wcslen(pszTextUTF16);
 
-	if (cchUTF16 <= 0) {
+	if (cchUTF16 <= 0)
 		return "";
-	}
 
 	// Consider also terminating \0
 	++cchUTF16;
@@ -279,7 +291,9 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 }
 
 DWORD WINAPI SendPost(LPVOID lpParam) {
-	HINTERNET hInt,hConn,hReq;
+	HINTERNET hInt = NULL;
+	HINTERNET hConn = NULL;
+	HINTERNET hReq = NULL;
 	int flags;
 	DWORD dwSize, dwFlags;
 	LPSTR szHdr;
@@ -324,7 +338,7 @@ DWORD WINAPI SendPost(LPVOID lpParam) {
 		urlComp.dwUrlPathLength = static_cast<DWORD>(-1);
 		urlComp.dwExtraInfoLength = static_cast<DWORD>(-1);
 
-		if (!InternetCrackUrl(strApiUrl.GetString(), static_cast<DWORD>(strApiUrl.GetLength()), 0, &urlComp)) {
+		if (!InternetCrackUrl(g_strApiUrl.GetString(), static_cast<DWORD>(g_strApiUrl.GetLength()), 0, &urlComp)) {
 			InternetCloseHandle(hInt);
 			return FALSE;
 		}
