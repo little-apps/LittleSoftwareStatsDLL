@@ -18,17 +18,15 @@
 
 #pragma once
 
-int nLastErrorId;
+BOOL g_bStarted = FALSE;
 
-BOOL bStarted = FALSE;
+int g_nApiFormat = 0;
+CString g_strApiUrl;
 
-int nApiFormat = 0;
-CString strApiUrl;
+CString g_strApplicationId;
+CString g_strApplicationVer;
 
-CString strApplicationId;
-CString strApplicationVer;
+CString g_strUniqueId;
+CString g_strSessionId;
 
-CString strUniqueId;
-CString strSessionId;
-
-int nFlowNumber = 0;
+int g_nFlowNumber = 0;
