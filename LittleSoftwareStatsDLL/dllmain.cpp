@@ -31,54 +31,54 @@ extern "C" {
 	Events cEvents;
 
 	__declspec(dllexport) void Start(LPCTSTR szApiUrl, int nApiType, LPCTSTR szAppId, LPCTSTR szAppVer) {
-		if (bStarted)
+		if (g_bStarted)
 			return;
 
-		strApiUrl = szApiUrl;
-		nApiFormat = nApiType;
+		g_strApiUrl = szApiUrl;
+		g_nApiFormat = nApiType;
 
-		strApplicationId = szAppId;
-		strApplicationVer = szAppVer;
+		g_strApplicationId = szAppId;
+		g_strApplicationVer = szAppVer;
 
-		if (strApiUrl.IsEmpty() || strApplicationId.IsEmpty() || strApplicationVer.IsEmpty())
+		if (g_strApiUrl.IsEmpty() || g_strApplicationId.IsEmpty() || g_strApplicationVer.IsEmpty())
 			return;
 
-		if (nApiFormat != FORMAT_JSON && nApiFormat != FORMAT_XML)
+		if (g_nApiFormat != FORMAT_JSON && g_nApiFormat != FORMAT_XML)
 			return;
 		
-		GetMachineHash(strUniqueId);
+		GetMachineHash(g_strUniqueId);
 
-		strSessionId = GenerateId();
+		g_strSessionId = GenerateId();
 
-		EventData ev(_T("strApp"), strSessionId);
+		EventData ev(_T("strApp"), g_strSessionId);
 		WindowsOperatingSystem cWindowsOS;
 
-		ev.Add(_T("ID"), strUniqueId);
-		ev.Add(_T("aid"), strApplicationId);
-		ev.Add(_T("aver"), strApplicationVer);
+		ev.Add(_T("ID"), g_strUniqueId);
+		ev.Add(_T("aid"), g_strApplicationId);
+		ev.Add(_T("aver"), g_strApplicationVer);
 
-		ev.Add(_T("osv"), cWindowsOS.strVersion);
-		ev.Add(_T("ossp"), cWindowsOS.nServicePack);
-		ev.Add(_T("osar"), cWindowsOS.nArchitecture);
-		ev.Add(_T("osjv"), cWindowsOS.strJavaVer);
-		ev.Add(_T("osnet"), cWindowsOS.strFrameworkVer);
-		ev.Add(_T("osnsp"), cWindowsOS.nFrameworkSP);
-		ev.Add(_T("oslng"), cWindowsOS.nLcid);
+		ev.Add(_T("osv"), cWindowsOS.m_strVersion);
+		ev.Add(_T("ossp"), cWindowsOS.m_nServicePack);
+		ev.Add(_T("osar"), cWindowsOS.m_nArchitecture);
+		ev.Add(_T("osjv"), cWindowsOS.m_strJavaVer);
+		ev.Add(_T("osnet"), cWindowsOS.m_strFrameworkVer);
+		ev.Add(_T("osnsp"), cWindowsOS.m_nFrameworkSP);
+		ev.Add(_T("oslng"), cWindowsOS.m_nLcid);
 
-		ev.Add(_T("osscn"), cWindowsOS.cWindowsHardware.strScreenRes);
-		ev.Add(_T("cnm"), cWindowsOS.cWindowsHardware.strCPUName);
-		ev.Add(_T("car"), cWindowsOS.cWindowsHardware.nCPUArch);
-		ev.Add(_T("cbr"), cWindowsOS.cWindowsHardware.strCPUManufacturer);
-		ev.Add(_T("cfr"), cWindowsOS.cWindowsHardware.nCPUFreq);
-		ev.Add(_T("ccr"), cWindowsOS.cWindowsHardware.nCPUCores);
-		ev.Add(_T("mtt"), cWindowsOS.cWindowsHardware.nMemTotal);
-		ev.Add(_T("mfr"), cWindowsOS.cWindowsHardware.nMemFree);
-		ev.Add(_T("dtt"), cWindowsOS.cWindowsHardware.nDiskTotal);
-		ev.Add(_T("dfr"), cWindowsOS.cWindowsHardware.nDiskFree);
+		ev.Add(_T("osscn"), cWindowsOS.cWindowsHardware.m_strScreenRes);
+		ev.Add(_T("cnm"), cWindowsOS.cWindowsHardware.m_strCPUName);
+		ev.Add(_T("car"), cWindowsOS.cWindowsHardware.m_nCPUArch);
+		ev.Add(_T("cbr"), cWindowsOS.cWindowsHardware.m_strCPUManufacturer);
+		ev.Add(_T("cfr"), cWindowsOS.cWindowsHardware.m_nCPUFreq);
+		ev.Add(_T("ccr"), cWindowsOS.cWindowsHardware.m_nCPUCores);
+		ev.Add(_T("mtt"), cWindowsOS.cWindowsHardware.m_nMemTotal);
+		ev.Add(_T("mfr"), cWindowsOS.cWindowsHardware.m_nMemFree);
+		ev.Add(_T("dtt"), cWindowsOS.cWindowsHardware.m_nDiskTotal);
+		ev.Add(_T("dfr"), cWindowsOS.cWindowsHardware.m_nDiskFree);
 
 		cEvents.Add(ev);
 
-		bStarted = TRUE;
+		g_bStarted = TRUE;
 
 		/* For debugging use */
 		/*CString strOutput = cEvents.Serialize();
@@ -100,14 +100,14 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void Stop() {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
 		DWORD dwRetVal;
 
-		Cache cCache(strApplicationId);
+		Cache cCache(g_strApplicationId);
 
-		cEvents.Add(EventData(CString(_T("stApp")), strSessionId));
+		cEvents.Add(EventData(CString(_T("stApp")), g_strSessionId));
 
 		CStringW strData, strPostData;
 
@@ -132,10 +132,10 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void Event(LPCTSTR szCategoryName, LPCTSTR szEventName) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
-		EventData ev(CString(_T("ev")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("ev")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("ca"), szCategoryName);
 		ev.Add(_T("nm"), szEventName);
@@ -144,10 +144,10 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void EventValue(LPCTSTR szCategoryName, LPCTSTR szEventName, LPCTSTR szEventValue) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
-		EventData ev(CString(_T("evV")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("evV")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("ca"), szCategoryName);
 		ev.Add(_T("nm"), szEventName);
@@ -157,10 +157,10 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void EventPeriod(LPCTSTR szCategoryName, LPCTSTR szEventName, int nEventDuration, BOOL bCompleted) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
-		EventData ev(CString(_T("evP")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("evP")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("ca"), szCategoryName);
 		ev.Add(_T("nm"), szEventName);
@@ -171,10 +171,10 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void Log(LPCTSTR szLogMessage) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
-		EventData ev(CString(_T("lg")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("lg")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("ms"), szLogMessage);
 
@@ -182,10 +182,10 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void CustomData(LPCTSTR szDataName, LPCTSTR szDataValue) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
-		EventData ev(CString(_T("ctD")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("ctD")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("nm"), szDataName);
 		ev.Add(_T("vl"), szDataValue);
@@ -194,7 +194,7 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void License(TCHAR chLicense) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
 		if (islower(chLicense))
@@ -208,7 +208,7 @@ extern "C" {
 			return;
 
 
-		EventData ev(CString(_T("ctD")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("ctD")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("nm"), _T("License"));
 		ev.Add(_T("vl"), CString(chLicense, 1));
@@ -217,10 +217,10 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void Exception(LPCTSTR szMessage, LPCTSTR szStackTrace, LPCTSTR szSource, LPCTSTR szTargetSite) {
-		if (!bStarted)
+		if (!g_bStarted)
 			return;
 
-		EventData ev(CString(_T("exC")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("exC")), g_strSessionId, ++g_nFlowNumber);
 
 		ev.Add(_T("msg"), szMessage);
 		ev.Add(_T("stk"), szStackTrace);
@@ -231,43 +231,43 @@ extern "C" {
 	}
 
 	__declspec(dllexport) void Install(LPCTSTR szAppId, LPCTSTR szAppVer) {
-		EventData ev(CString(_T("ist")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("ist")), g_strSessionId, ++g_nFlowNumber);
 
-		if (strUniqueId.IsEmpty())
-			GetMachineHash(strUniqueId);
-		if (strSessionId.IsEmpty())
-			strSessionId = GenerateId();
+		if (g_strUniqueId.IsEmpty())
+			GetMachineHash(g_strUniqueId);
+		if (g_strSessionId.IsEmpty())
+			g_strSessionId = GenerateId();
 
-		strApplicationId = szAppId;
-		strApplicationVer = szAppVer;
+		g_strApplicationId = szAppId;
+		g_strApplicationVer = szAppVer;
 
-		if (strApplicationId.IsEmpty() || strApplicationVer.IsEmpty())
+		if (g_strApplicationId.IsEmpty() || g_strApplicationVer.IsEmpty())
 			return;
 
 		ev.Add(_T("ID"), strUniqueId);
-		ev.Add(_T("aid"), strApplicationId);
-		ev.Add(_T("aver"), strApplicationVer);
+		ev.Add(_T("aid"), g_strApplicationId);
+		ev.Add(_T("aver"), g_strApplicationVer);
 
 		cEvents.Add(ev);
 	}
 
 	__declspec(dllexport) void Uninstall(LPCTSTR szAppId, LPCTSTR szAppVer) {
-		EventData ev(CString(_T("ust")), strSessionId, ++nFlowNumber);
+		EventData ev(CString(_T("ust")), g_strSessionId, ++ng_FlowNumber);
 
-		if (strUniqueId.IsEmpty())
-			GetMachineHash(strUniqueId);
-		if (strSessionId.IsEmpty())
-			strSessionId = GenerateId();
+		if (g_strUniqueId.IsEmpty())
+			GetMachineHash(g_strUniqueId);
+		if (g_strSessionId.IsEmpty())
+			g_strSessionId = GenerateId();
 
-		strApplicationId = szAppId;
-		strApplicationVer = szAppVer;
+		g_strApplicationId = szAppId;
+		g_strApplicationVer = szAppVer;
 
-		if (strApplicationId.IsEmpty() || strApplicationVer.IsEmpty())
+		if (g_strApplicationId.IsEmpty() || g_strApplicationVer.IsEmpty())
 			return;
 
-		ev.Add(_T("ID"), strUniqueId);
-		ev.Add(_T("aid"), strApplicationId);
-		ev.Add(_T("aver"), strApplicationVer);
+		ev.Add(_T("ID"), g_strUniqueId);
+		ev.Add(_T("aid"), g_strApplicationId);
+		ev.Add(_T("aver"), g_strApplicationVer);
 
 		cEvents.Add(ev);
 	}
