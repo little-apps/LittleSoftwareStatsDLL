@@ -22,30 +22,37 @@ class CMD5
 {
 public:
 	CMD5() {
+		m_szHash = NULL;
+		m_hHash = 0;
+		m_hCryptProv = NULL;
+
 		if(CryptAcquireContext(&m_hCryptProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) == 0){
-			if(GetLastError() == NTE_EXISTS){
+			if (GetLastError() == NTE_EXISTS)
 				CryptAcquireContext(&m_hCryptProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, 0);
-			}
 		}
 	}
 
 	~CMD5() {
 		if(m_hCryptProv) 
 			CryptReleaseContext(m_hCryptProv, 0);
-		m_hCryptProv = NULL;
-		free(m_szHash);
+
+		delete[] m_szHash;
 	}
 
 	bool Calculate(LPCTSTR szText) {
 		DWORD dwLen = sizeof(TCHAR) * _tcslen(szText);
-		DWORD dwHashLen;
+		DWORD dwHashLen = 0;
 		DWORD dwHashLenSize = sizeof(DWORD);
+
+		delete[] m_szHash;
+		m_szHash = NULL;
+		m_hHash = NULL;
 
 		if (CryptCreateHash(m_hCryptProv, CALG_MD5, 0, 0, &m_hHash)) {
 			if (CryptHashData(m_hHash, (const BYTE*)szText, dwLen, 0)) {
 				if (CryptGetHashParam(m_hHash, HP_HASHSIZE, (BYTE *)&dwHashLen, &dwHashLenSize, 0)) {
-					if(m_szHash = (BYTE*)malloc(dwHashLen)) {
-						if (CryptGetHashParam(m_hHash, HP_HASHVAL, (BYTE*)m_szHash, &dwHashLen, 0)) {
+					if (m_szHash = new BYTE[dwHashLen]) {
+						if (CryptGetHashParam(m_hHash, HP_HASHVAL, m_szHash, &dwHashLen, 0)) {
 							CryptDestroyHash(m_hHash);
 						}
 					}
@@ -57,8 +64,12 @@ public:
 	}
 
 	bool Calculate(const LPBYTE szText, DWORD dwLen) {
-		DWORD dwHashLen;
+		DWORD dwHashLen = 0;
 		DWORD dwHashLenSize = sizeof(DWORD);
+
+		delete[] m_szHash;
+		m_szHash = NULL;
+		m_hHash = NULL;
 
 		if (CryptCreateHash(m_hCryptProv, CALG_MD5, 0, 0, &m_hHash)) {
 			if (CryptHashData(m_hHash, (const BYTE*)szText, dwLen, 0)) {
@@ -86,17 +97,11 @@ public:
 	}
 
 	void HexHash(CString &strHash) {
-		//LPTSTR szBuf = strHash.GetBuffer(33);
-
-		//ZeroMemory(szBuf, 33);
+		if (!strHash.IsEmpty())
+			strHash.Empty();
 
 		for (int i=0; i<16; i++)
 			strHash += StringFormat(_T("%02X"), m_szHash[i]);
-		//_stprintf_s(szBuf+i*2, 33, _T("%02X"), m_szHash[i]);
-
-		//szBuf[32]=0;
-
-		return;
 	}
 private:
 	BYTE *m_szHash;
