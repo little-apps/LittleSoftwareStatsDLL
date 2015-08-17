@@ -40,6 +40,7 @@ In order for the LittleSoftwareStatsDLL to properly detect operating systems, pl
 ### Credits ###
 Little Apps would like to thank the following for helping with this library for Little Software Stats:
 
+ - The [Palette CAD](http://palettecad.com/) team for making numerous improvements and fixes
  - [RapidJSON by Milo Yip](https://github.com/miloyip/rapidjson)
  - [TinyXML-2 by Lee Thomason](https://github.com/leethomason/tinyxml2/)
 
