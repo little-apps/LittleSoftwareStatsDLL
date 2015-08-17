@@ -24,6 +24,9 @@
 #define _SECURE_SCL 0
 #endif
 
+// Removes Multibyte Deprecated Warning
+#define NO_WARN_MBCS_MFC_DEPRECATION
+
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 // Windows Header Files:
 #include <afx.h>
