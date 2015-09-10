@@ -416,7 +416,7 @@ DWORD WINAPI SendPost(LPVOID lpParam) {
 				}
 			}
 		} else {
-			int err = GetLastError();
+			//int err = GetLastError();
 
 			InternetCloseHandle(hInt);
 			InternetCloseHandle(hConn);
