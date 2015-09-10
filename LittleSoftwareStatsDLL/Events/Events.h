@@ -42,7 +42,7 @@ public:
 
 	CStringW Serialize() {
 		CStringW strOutput;
-		size_t i, j;
+		size_t i;
 		std::map<CString, EventDataValue>::iterator it;
 
 		if (g_nApiFormat == FORMAT_JSON) {
@@ -55,8 +55,6 @@ public:
 				EventData ev = this->events_vector[i];
 
 				writer.StartObject();
-
-				j = 0;
 
 				for (it = ev.hash_table.begin(); it != ev.hash_table.end(); ++it) {
 					CString key = it->first;
@@ -110,8 +108,6 @@ public:
 				EventData ev = this->events_vector[i];
 
 				tinyxml2::XMLElement *pEvent = xmlDoc.NewElement("Event");
-
-				j = 0;
 
 				for (it = ev.hash_table.begin(); it != ev.hash_table.end(); ++it) {
 					CString key = it->first;
