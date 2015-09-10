@@ -51,7 +51,7 @@ public:
 		if (CryptCreateHash(m_hCryptProv, CALG_MD5, 0, 0, &m_hHash)) {
 			if (CryptHashData(m_hHash, reinterpret_cast<const BYTE*>(szText), dwLen, 0)) {
 				if (CryptGetHashParam(m_hHash, HP_HASHSIZE, reinterpret_cast<BYTE *>(&dwHashLen), &dwHashLenSize, 0)) {
-					if (m_szHash = new BYTE[dwHashLen]) {
+					if ((m_szHash = new BYTE[dwHashLen])) {
 						if (CryptGetHashParam(m_hHash, HP_HASHVAL, m_szHash, &dwHashLen, 0)) {
 							CryptDestroyHash(m_hHash);
 						}
