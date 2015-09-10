@@ -75,8 +75,8 @@ public:
 
 
 	Types Type;
-	int i;
+	int i = INT_MIN;
 	CString s;
-	double d;
-	unsigned long ul;
+	double d = -DBL_MAX;
+	unsigned long ul = -ULONG_MAX;
 };
