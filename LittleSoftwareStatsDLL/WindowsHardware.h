@@ -74,7 +74,7 @@ private:
 		m_nDiskTotal = 0;
 		m_nDiskFree = 0;
 
-		DWORD dwSize = GetLogicalDriveStrings(0, NULL);
+		DWORD dwSize = GetLogicalDriveStrings(0, nullptr);
 		LPTSTR pszDrives = new TCHAR[dwSize + 2];
 		GetLogicalDriveStrings(dwSize + 2,pszDrives);
 
@@ -84,7 +84,7 @@ private:
 				nTotalBytes = 0;
 				nFreeBytes = 0;
 
-				GetDiskFreeSpaceEx(pszDrv, NULL, (PULARGE_INTEGER)&nTotalBytes,(PULARGE_INTEGER)&nFreeBytes);
+				GetDiskFreeSpaceEx(pszDrv, nullptr, reinterpret_cast<PULARGE_INTEGER>(&nTotalBytes), reinterpret_cast<PULARGE_INTEGER>(&nFreeBytes));
 
 				m_nDiskTotal += static_cast<ULONG>(nTotalBytes / 1024 / 1024);
 				m_nDiskFree += static_cast<ULONG>(nFreeBytes / 1024 / 1024);
@@ -106,7 +106,7 @@ private:
 			LPTSTR szCPUName = new TCHAR[100];
 			ZeroMemory(szCPUName, 100);
 
-			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), NULL, NULL, (LPBYTE)szCPUName, &dwSize) == ERROR_SUCCESS) {
+			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szCPUName), &dwSize) == ERROR_SUCCESS) {
 				m_strCPUName = szCPUName;
 				m_strCPUName.Replace(_T("(TM)"), _T(""));
 				m_strCPUName.Replace(_T("(R)"), _T(""));
@@ -119,7 +119,7 @@ private:
 			LPTSTR szCPUManufacturer = new TCHAR[100];
 			ZeroMemory(szCPUManufacturer, 100);
 
-			if (RegQueryValueEx(hKey, _T("VendorIdentifier"), NULL, NULL, (LPBYTE)szCPUManufacturer, &dwSize) == ERROR_SUCCESS) {
+			if (RegQueryValueEx(hKey, _T("VendorIdentifier"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szCPUManufacturer), &dwSize) == ERROR_SUCCESS) {
 				m_strCPUManufacturer = szCPUManufacturer;
 			} else {
 				m_strCPUManufacturer = _T("Unknown");
@@ -127,7 +127,7 @@ private:
 
 			// Get CPU Frequency
 			DWORD dwCPUFreq = 0;
-			if (RegQueryValueEx(hKey, _T("~MHz"), NULL, NULL, (LPBYTE)&dwCPUFreq, &dwSize) == ERROR_SUCCESS)
+			if (RegQueryValueEx(hKey, _T("~MHz"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwCPUFreq), &dwSize) == ERROR_SUCCESS)
 				m_nCPUFreq = dwCPUFreq;
 
 			// Free buffer

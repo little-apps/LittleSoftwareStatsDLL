@@ -67,7 +67,7 @@ public:
 		m_cFile.SeekToBegin();
 
 		// Read file
-		UINT nBytes = (UINT)m_cFile.GetLength() + 1;
+		UINT nBytes = static_cast<UINT>(m_cFile.GetLength()) + 1;
 		int nChars = nBytes / sizeof(WCHAR);
 		nBytes = m_cFile.Read(strData.GetBuffer(nChars), nBytes);
 		strData.ReleaseBuffer(nChars);

@@ -24,16 +24,16 @@ extern int g_nApiFormat;
 void GetMachineHash(CString &strHashHex) {
 	CMD5 cMD5;
 	BYTE *szHash = new BYTE[48];
-	LPBYTE szMachineNameHash = NULL;
-	LPBYTE szNetworkAddressHash = NULL;
-	LPBYTE szVolumeIdHash = NULL;
+	LPBYTE szMachineNameHash = nullptr;
+	LPBYTE szNetworkAddressHash = nullptr;
+	LPBYTE szVolumeIdHash = nullptr;
 
 	TCHAR szMachineId[100];
 	DWORD nMachineIdLen = 100;
 
 	TCHAR szNetworkAddress[13];
-	IP_ADAPTER_INFO *pAdapterInfo = NULL;
-	IP_ADAPTER_INFO *pAdapter = NULL;
+	IP_ADAPTER_INFO *pAdapterInfo = nullptr;
+	IP_ADAPTER_INFO *pAdapter = nullptr;
 	DWORD dwRetVal = 0;
 	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
@@ -57,16 +57,16 @@ void GetMachineHash(CString &strHashHex) {
 	szMachineNameHash = cMD5.Hash();
 
 	pAdapterInfo = new IP_ADAPTER_INFO;
-	if (pAdapterInfo == NULL) {
+	if (pAdapterInfo == nullptr) {
 		TRACE(_T("Error allocating memory needed to call GetAdaptersinfo()"));
 	}
 
 	// Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
 	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
 		delete pAdapterInfo;
-		pAdapterInfo = (IP_ADAPTER_INFO *)new BYTE[ulOutBufLen];
+		pAdapterInfo = reinterpret_cast<IP_ADAPTER_INFO *>(new BYTE[ulOutBufLen]);
 
-		if (pAdapterInfo == NULL) {
+		if (pAdapterInfo == nullptr) {
 			TRACE(_T("Error allocating memory needed to call GetAdaptersinfo()"));
 		}
 	}
@@ -98,7 +98,7 @@ void GetMachineHash(CString &strHashHex) {
 	szNetworkAddressHash = cMD5.Hash();
 
 	if (GetVolumeInformation(
-		NULL,
+		nullptr,
 		szVolumeName,
 		sizeof(szVolumeName),
 		&dwSerialNumber,
@@ -140,7 +140,7 @@ CStringA GenerateId() {
 
 	ZeroMemory(szId, 33);
 
-	srand((unsigned int)time((time_t)NULL));
+	srand(static_cast<unsigned int>(time(nullptr)));
 
     for (int i = 0; i < 32; ++i) {
 		szId[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
@@ -153,7 +153,7 @@ CStringA GenerateId() {
 
 CString StringFormat(const TCHAR *fmt, ...) {
 	CString strResult;
-    LPTSTR szBuffer = NULL;
+    LPTSTR szBuffer = nullptr;
     int sz = 0;
     va_list args;
 
@@ -217,7 +217,7 @@ CStringW Enquoute(const CStringW &s) {
 LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 	// Special case of NULL or empty input string
 
-	if ( (pszTextUTF16 == NULL) || (*pszTextUTF16 == _T('\0')) )
+	if ( (pszTextUTF16 == nullptr) || (*pszTextUTF16 == _T('\0')) )
 		// Return empty string
 		return "";
 
@@ -242,7 +242,7 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 	ZeroMemory(&osvi, sizeof(osvi));
 
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	if (!GetVersionEx((OSVERSIONINFO*) &osvi))
+	if (!GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&osvi)))
 		// Failed to get OS version
 		return "";
 
@@ -258,9 +258,9 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 		dwConversionFlags,      // specify conversion behavior
 		pszTextUTF16,           // source UTF-16 string
 		static_cast<int>( cchUTF16 ),   // total source string length, in WCHAR's, including end-of-string \0
-		NULL,                   // unused - no conversion required in this step
+		nullptr,                   // unused - no conversion required in this step
 		0,                      // request buffer size
-		NULL, NULL              // unused
+		nullptr, nullptr              // unused
 		);
 
 	if (cbUTF8 == 0)
@@ -280,7 +280,7 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 		static_cast<int>( cchUTF16 ),   // total source string length, in WCHAR's, including end-of-string \0
 		szUTF8,                 // destination buffer
 		cbUTF8,                 // destination buffer size, in bytes
-		NULL, NULL              // unused
+		nullptr, nullptr              // unused
 		); 
 
 	if (result == 0) 
@@ -291,9 +291,9 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 }
 
 DWORD WINAPI SendPost(LPVOID lpParam) {
-	HINTERNET hInt = NULL;
-	HINTERNET hConn = NULL;
-	HINTERNET hReq = NULL;
+	HINTERNET hInt = nullptr;
+	HINTERNET hConn = nullptr;
+	HINTERNET hReq = nullptr;
 	int flags;
 	DWORD dwSize, dwFlags;
 	LPSTR szHdr;
@@ -313,9 +313,9 @@ DWORD WINAPI SendPost(LPVOID lpParam) {
 		if (strcmp(szData, "") == 0) // Error converting to UTF8
 			return FALSE;
 
-		hInt = InternetOpen(API_USERAGENT, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
+		hInt = InternetOpen(API_USERAGENT, INTERNET_OPEN_TYPE_PRECONFIG, nullptr, nullptr, 0);
 
-		if (hInt == NULL)
+		if (hInt == nullptr)
 			return FALSE;
 
 		// Set HTTP request timeout
@@ -345,9 +345,9 @@ DWORD WINAPI SendPost(LPVOID lpParam) {
 
 		CString strHostname(urlComp.lpszHostName, urlComp.dwHostNameLength);
 
-		hConn = InternetConnect(hInt, strHostname, urlComp.nPort, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
+		hConn = InternetConnect(hInt, strHostname, urlComp.nPort, nullptr, nullptr, INTERNET_SERVICE_HTTP, 0, 1);
 
-		if (hConn == NULL) {
+		if (hConn == nullptr) {
 			InternetCloseHandle(hInt);
 			return FALSE;
 		}
@@ -357,9 +357,9 @@ DWORD WINAPI SendPost(LPVOID lpParam) {
 		else
 			flags = INTERNET_FLAG_NO_UI;
 
-		hReq = HttpOpenRequest(hConn, _T("POST"), urlComp.lpszUrlPath, NULL, NULL, NULL, flags, 1);
+		hReq = HttpOpenRequest(hConn, _T("POST"), urlComp.lpszUrlPath, nullptr, nullptr, nullptr, flags, 1);
 
-		if (hReq == NULL) {
+		if (hReq == nullptr) {
 			InternetCloseHandle(hInt);
 			InternetCloseHandle(hConn);
 

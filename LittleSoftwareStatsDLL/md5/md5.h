@@ -22,13 +22,13 @@ class CMD5
 {
 public:
 	CMD5() {
-		m_szHash = NULL;
+		m_szHash = nullptr;
 		m_hHash = 0;
 		m_hCryptProv = NULL;
 
-		if(CryptAcquireContext(&m_hCryptProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) == 0){
+		if(CryptAcquireContext(&m_hCryptProv, nullptr, MS_ENHANCED_PROV, PROV_RSA_FULL, CRYPT_NEWKEYSET) == 0){
 			if (GetLastError() == NTE_EXISTS)
-				CryptAcquireContext(&m_hCryptProv, NULL, MS_ENHANCED_PROV, PROV_RSA_FULL, 0);
+				CryptAcquireContext(&m_hCryptProv, nullptr, MS_ENHANCED_PROV, PROV_RSA_FULL, 0);
 		}
 	}
 
@@ -45,12 +45,12 @@ public:
 		DWORD dwHashLenSize = sizeof(DWORD);
 
 		delete[] m_szHash;
-		m_szHash = NULL;
+		m_szHash = nullptr;
 		m_hHash = NULL;
 
 		if (CryptCreateHash(m_hCryptProv, CALG_MD5, 0, 0, &m_hHash)) {
-			if (CryptHashData(m_hHash, (const BYTE*)szText, dwLen, 0)) {
-				if (CryptGetHashParam(m_hHash, HP_HASHSIZE, (BYTE *)&dwHashLen, &dwHashLenSize, 0)) {
+			if (CryptHashData(m_hHash, reinterpret_cast<const BYTE*>(szText), dwLen, 0)) {
+				if (CryptGetHashParam(m_hHash, HP_HASHSIZE, reinterpret_cast<BYTE *>(&dwHashLen), &dwHashLenSize, 0)) {
 					if (m_szHash = new BYTE[dwHashLen]) {
 						if (CryptGetHashParam(m_hHash, HP_HASHVAL, m_szHash, &dwHashLen, 0)) {
 							CryptDestroyHash(m_hHash);
@@ -68,14 +68,14 @@ public:
 		DWORD dwHashLenSize = sizeof(DWORD);
 
 		delete[] m_szHash;
-		m_szHash = NULL;
+		m_szHash = nullptr;
 		m_hHash = NULL;
 
 		if (CryptCreateHash(m_hCryptProv, CALG_MD5, 0, 0, &m_hHash)) {
-			if (CryptHashData(m_hHash, (const BYTE*)szText, dwLen, 0)) {
-				if (CryptGetHashParam(m_hHash, HP_HASHSIZE, (BYTE *)&dwHashLen, &dwHashLenSize, 0)) {
-					if(m_szHash = (BYTE*)malloc(dwHashLen)) {
-						if (CryptGetHashParam(m_hHash, HP_HASHVAL, (BYTE*)m_szHash, &dwHashLen, 0)) {
+			if (CryptHashData(m_hHash, static_cast<const BYTE*>(szText), dwLen, 0)) {
+				if (CryptGetHashParam(m_hHash, HP_HASHSIZE, reinterpret_cast<BYTE *>(&dwHashLen), &dwHashLenSize, 0)) {
+					if((m_szHash = static_cast<BYTE*>(malloc(dwHashLen)))) {
+						if (CryptGetHashParam(m_hHash, HP_HASHVAL, static_cast<BYTE*>(m_szHash), &dwHashLen, 0)) {
 							CryptDestroyHash(m_hHash);
 						}
 					}

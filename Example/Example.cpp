@@ -55,28 +55,28 @@ fUninstallProc fUninstall;
 bool LoadDll() {
 	HINSTANCE hInst = LoadLibrary(_T("LittleSoftwareStatsDLL.dll"));
 
-	if (hInst != NULL) {
-		if ((fStart = (fStartProc) GetProcAddress(hInst, "Start")) == NULL)
+	if (hInst != nullptr) {
+		if ((fStart = reinterpret_cast<fStartProc>(GetProcAddress(hInst, "Start"))) == nullptr)
 			return false;
-		if ((fStop = (fStopProc) GetProcAddress(hInst, "Stop")) == NULL)
+		if ((fStop = reinterpret_cast<fStopProc>(GetProcAddress(hInst, "Stop"))) == nullptr)
 			return false;
-		if ((fEvent = (fEventProc) GetProcAddress(hInst, "Event")) == NULL)
+		if ((fEvent = reinterpret_cast<fEventProc>(GetProcAddress(hInst, "Event"))) == nullptr)
 			return false;
-		if ((fEventValue = (fEventValueProc) GetProcAddress(hInst, "EventValue")) == NULL)
+		if ((fEventValue = reinterpret_cast<fEventValueProc>(GetProcAddress(hInst, "EventValue"))) == nullptr)
 			return false;
-		if ((fEventPeriod = (fEventPeriodProc) GetProcAddress(hInst, "EventPeriod")) == NULL)
+		if ((fEventPeriod = reinterpret_cast<fEventPeriodProc>(GetProcAddress(hInst, "EventPeriod"))) == nullptr)
 			return false;
-		if ((fLog = (fLogProc) GetProcAddress(hInst, "Log")) == NULL)
+		if ((fLog = reinterpret_cast<fLogProc>(GetProcAddress(hInst, "Log"))) == nullptr)
 			return false;
-		if ((fCustomData = (fCustomDataProc) GetProcAddress(hInst, "CustomData")) == NULL)
+		if ((fCustomData = reinterpret_cast<fCustomDataProc>(GetProcAddress(hInst, "CustomData"))) == nullptr)
 			return false;
-		if ((fLicense = (fLicenseProc) GetProcAddress(hInst, "License")) == NULL)
+		if ((fLicense = reinterpret_cast<fLicenseProc>(GetProcAddress(hInst, "License"))) == nullptr)
 			return false;
-		if ((fException = (fExceptionProc) GetProcAddress(hInst, "Exception")) == NULL)
+		if ((fException = reinterpret_cast<fExceptionProc>(GetProcAddress(hInst, "Exception"))) == nullptr)
 			return false;
-		if ((fInstall = (fInstallProc) GetProcAddress(hInst, "Install")) == NULL)
+		if ((fInstall = reinterpret_cast<fInstallProc>(GetProcAddress(hInst, "Install"))) == nullptr)
 			return false;
-		if ((fUninstall = (fUninstallProc) GetProcAddress(hInst, "Uninstall")) == NULL)
+		if ((fUninstall = reinterpret_cast<fUninstallProc>(GetProcAddress(hInst, "Uninstall"))) == nullptr)
 			return false;
 
 		return true;

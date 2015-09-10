@@ -23,7 +23,7 @@ public:
 	EventData(CString strEventCode, CString strSessionId, int nFlowId = 0) {
 		this->Add(_T("tp"), strEventCode);
 		this->Add(_T("ss"), strSessionId);
-		this->Add(_T("ts"), (int)std::time(0));
+		this->Add(_T("ts"), static_cast<int>(std::time(nullptr)));
 
 		if (nFlowId != 0)
 			this->Add(_T("fl"), nFlowId);

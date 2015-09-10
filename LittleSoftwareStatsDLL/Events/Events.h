@@ -139,7 +139,7 @@ public:
 					}
 					else if (value.Type == EventDataValue::ULONG) {
 						ULONG ul = value;
-						pEventData->SetText((unsigned int)ul);
+						pEventData->SetText(static_cast<unsigned int>(ul));
 					}
 
 					pEvent->InsertEndChild(pEventData);
@@ -150,7 +150,7 @@ public:
 
 			xmlDoc.InsertFirstChild(pRoot);
 
-			tinyxml2::XMLPrinter printer(0, true);
+			tinyxml2::XMLPrinter printer(nullptr, true);
 
 			xmlDoc.Print(&printer);
 

@@ -116,7 +116,7 @@ extern "C" {
 		strPostData = cCache.GetPostData(strData);
 
 		DWORD dwThreadId;
-		HANDLE hThread = CreateThread(NULL, 0, SendPost, (LPVOID)&strPostData, 0, &dwThreadId);
+		HANDLE hThread = CreateThread(nullptr, 0, SendPost, static_cast<LPVOID>(&strPostData), 0, &dwThreadId);
 
 		WaitForSingleObject(hThread, INFINITE);
 
