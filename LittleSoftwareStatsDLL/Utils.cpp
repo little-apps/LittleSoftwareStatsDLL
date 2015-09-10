@@ -34,7 +34,6 @@ void GetMachineHash(CString &strHashHex) {
 	TCHAR szNetworkAddress[13];
 	IP_ADAPTER_INFO *pAdapterInfo;
 	IP_ADAPTER_INFO *pAdapter;
-	DWORD dwRetVal;
 	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
 	TCHAR szVolumeId[20];
@@ -71,7 +70,7 @@ void GetMachineHash(CString &strHashHex) {
 		}
 	}
 
-	if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
+	if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == NO_ERROR) {
 		pAdapter = pAdapterInfo;
 
 		while (pAdapter) {
