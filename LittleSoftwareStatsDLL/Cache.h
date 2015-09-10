@@ -169,6 +169,5 @@ public:
 	}
 private:
 	CFile m_cFile;
-	BOOL m_bFileExists;
 	CString m_strApplicationId;
 };
