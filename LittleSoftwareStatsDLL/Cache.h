@@ -69,7 +69,9 @@ public:
 		// Read file
 		UINT nBytes = static_cast<UINT>(m_cFile.GetLength()) + 1;
 		int nChars = nBytes / sizeof(WCHAR);
-		nBytes = m_cFile.Read(strData.GetBuffer(nChars), nBytes);
+
+		m_cFile.Read(strData.GetBuffer(nChars), nBytes);
+		
 		strData.ReleaseBuffer(nChars);
 
 		// Decode from Base64
