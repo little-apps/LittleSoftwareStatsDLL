@@ -99,7 +99,6 @@ private:
 	void GetCPUInfo() {
 		HKEY hKey;
 		DWORD dwSize;
-		int nPos = -1;
 
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 			// Get CPU name
