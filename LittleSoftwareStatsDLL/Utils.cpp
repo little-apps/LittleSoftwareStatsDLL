@@ -24,17 +24,17 @@ extern int g_nApiFormat;
 void GetMachineHash(CString &strHashHex) {
 	CMD5 cMD5;
 	BYTE *szHash = new BYTE[48];
-	LPBYTE szMachineNameHash = nullptr;
-	LPBYTE szNetworkAddressHash = nullptr;
-	LPBYTE szVolumeIdHash = nullptr;
+	LPBYTE szMachineNameHash;
+	LPBYTE szNetworkAddressHash;
+	LPBYTE szVolumeIdHash;
 
 	TCHAR szMachineId[100];
 	DWORD nMachineIdLen = 100;
 
 	TCHAR szNetworkAddress[13];
-	IP_ADAPTER_INFO *pAdapterInfo = nullptr;
-	IP_ADAPTER_INFO *pAdapter = nullptr;
-	DWORD dwRetVal = 0;
+	IP_ADAPTER_INFO *pAdapterInfo;
+	IP_ADAPTER_INFO *pAdapter;
+	DWORD dwRetVal;
 	ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
 	TCHAR szVolumeId[20];
@@ -153,8 +153,8 @@ CStringA GenerateId() {
 
 CString StringFormat(const TCHAR *fmt, ...) {
 	CString strResult;
-    LPTSTR szBuffer = nullptr;
-    int sz = 0;
+    LPTSTR szBuffer;
+    int sz;
     va_list args;
 
     va_start( args, fmt );
